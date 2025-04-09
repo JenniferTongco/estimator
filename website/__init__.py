@@ -1,13 +1,7 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 import os
-from flask_migrate import Migrate  # Import Flask-Migrate for handling migrations
+from .extensions import db, login_manager, migrate
 from .api import api  # Import the API blueprint for syncing
-
-# Initialize the database (only the instance)
-db = SQLAlchemy()
-migrate = Migrate()  # Initialize Flask-Migrate
 
 def create_app():
     app = Flask(__name__)
@@ -21,11 +15,13 @@ def create_app():
     # Disable Flask-SQLAlchemy track modifications
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # To avoid overhead
 
-    # Initialize the app with the database
-    db.init_app(app)  # Initialize db with app here
-
-    # Initialize Flask-Migrate with the app and database
+    # Initialize extensions with app
+    db.init_app(app)
     migrate.init_app(app, db)
+    
+    # Set up Flask-Login
+    login_manager.login_view = 'auth.login'  # Set the login route to redirect unauthorized users
+    login_manager.init_app(app)
 
     # Import and register blueprints
     from .views import views
@@ -36,21 +32,16 @@ def create_app():
     # Register the API blueprint for syncing data
     app.register_blueprint(api, url_prefix='/api')
 
-    # Import models
+    # Import models AFTER db is initialized
     from .models import User, DryingRecord
-
-    # Set up Flask-Login
-    login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'  # Set the login route to redirect unauthorized users
-    login_manager.init_app(app)
 
     # Define user loader callback
     @login_manager.user_loader
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # Create all tables (initial setup) - Only for SQLite or PostgreSQL when no migration is set
+    # Create the tables using Flask-Migrate (not db.create_all())
     with app.app_context():
-        db.create_all()  # Ensures db creation
+        migrate.init_app(app, db)  # Ensure migrations are handled
 
     return app

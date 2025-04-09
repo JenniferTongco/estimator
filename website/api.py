@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
-from .models import DryingRecord, db
+from .models import DryingRecord
+from .extensions import db
 from flask_login import login_required, current_user
 
 api = Blueprint('api', __name__)

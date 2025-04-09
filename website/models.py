@@ -1,5 +1,5 @@
-# Import the already initialized db from __init__.py
-from website import db  
+# Import db from extensions module
+from .extensions import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func  # Ensure func is imported
 
