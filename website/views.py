@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, redirect, url_for, jsonify, request
+from flask import Blueprint, render_template, redirect, url_for, request, jsonify
 from flask_login import login_required, current_user
 from .models import DryingRecord
+from . import db
 
 views = Blueprint('views', __name__)
 
