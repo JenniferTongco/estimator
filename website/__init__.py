@@ -1,8 +1,9 @@
-import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+import os
+from .api import api  # Import the API blueprint for syncing
 
 # Initialize the database and migration tools
 db = SQLAlchemy()
@@ -22,6 +23,8 @@ def create_app():
 
     # Initialize the app with the database
     db.init_app(app)
+
+    # Initialize Flask-Migrate with the app and database
     migrate.init_app(app, db)
 
     # Register the blueprints
@@ -29,6 +32,9 @@ def create_app():
     from .auth import auth
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+
+    # Register the API blueprint for syncing data
+    app.register_blueprint(api, url_prefix='/api')
 
     # Import models and set up Flask-Login
     from .models import User, DryingRecord
