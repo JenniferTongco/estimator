@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1 class="text-center">Welcome {{ user.first_name }}!</h1>
+<p class="text-center">Go to <a href="/records">Drying Records</a> to view your data.</p>
+{% endblock %}
