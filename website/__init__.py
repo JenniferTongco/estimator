@@ -5,7 +5,7 @@ import os
 from flask_migrate import Migrate  # Import Flask-Migrate for handling migrations
 from .api import api  # Import the API blueprint for syncing
 
-# Initialize the database here
+# Initialize the database (only the instance)
 db = SQLAlchemy()
 migrate = Migrate()  # Initialize Flask-Migrate
 
@@ -22,7 +22,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False  # To avoid overhead
 
     # Initialize the app with the database
-    db.init_app(app)
+    db.init_app(app)  # Initialize db with app here
 
     # Initialize Flask-Migrate with the app and database
     migrate.init_app(app, db)
@@ -36,7 +36,7 @@ def create_app():
     # Register the API blueprint for syncing data
     app.register_blueprint(api, url_prefix='/api')
 
-    # Import models (this will now work since db is properly initialized)
+    # Import models
     from .models import User, DryingRecord
 
     # Set up Flask-Login
@@ -51,6 +51,6 @@ def create_app():
 
     # Create all tables (initial setup) - Only for SQLite or PostgreSQL when no migration is set
     with app.app_context():
-        db.create_all()
+        db.create_all()  # Ensures db creation
 
     return app
