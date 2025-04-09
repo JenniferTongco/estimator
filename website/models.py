@@ -1,6 +1,9 @@
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
-from sqlalchemy.sql import func
-from website import db  # Import the db instance from __init__.py directly
+from sqlalchemy.sql import func  # Ensure func is imported
+
+# Define db here as a placeholder
+db = SQLAlchemy()
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
